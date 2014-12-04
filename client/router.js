@@ -92,7 +92,7 @@ ClientRouter.prototype.addBackboneRoute = function(routeObj) {
   this._router.route(pattern, name, handler);
 };
 
-ClientRouter.prototype.getHandler = function(action, pattern, route) {
+ClientRouter.prototype.getHandler = function(pattern, route) {
   var router = this;
 
   // abstract action call
@@ -124,22 +124,16 @@ ClientRouter.prototype.getHandler = function(action, pattern, route) {
       if (redirect != null) {
         router.redirectTo(redirect, {replace: true});
       } else {
-        if (!action) {
+        if (!route)
           throw new Error("Missing action \"" + route.action + "\" for controller \"" + route.controller + "\"");
-        } else if (typeof action == 'string') {
-          // in AMD environment action is the string containing path to the controller
-          // which will be loaded async (might be preloaded)
-          // Only used in AMD environment
-          requireAMD([action], function(controller) {
-            // check we have everything we need
-            if (typeof controller[route.action] != 'function') {
-              throw new Error("Missing action \"" + route.action + "\" for controller \"" + route.controller + "\"");
-            }
-            actionCall(controller[route.action], params);
-          });
-        } else {
-          actionCall(action, params);
-        }
+
+        router.getController(route.controller, function (error, controller) {
+          if (typeof controller[route.action] != 'function') {
+            throw new Error("Missing action \"" + route.action + "\" for controller \"" + route.controller + "\"");
+          }
+          actionCall(controller[route.action], params);
+        });
+
       }
     }
   };

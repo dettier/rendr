@@ -46,7 +46,7 @@ ServerRouter.prototype.getParams = function(req) {
  * This is the method that renders the request. It returns an Express
  * middleware function.
  */
-ServerRouter.prototype.getHandler = function(action, pattern, route) {
+ServerRouter.prototype.getHandler = function(pattern, route) {
   var router = this;
 
   return function(req, res, next) {
@@ -77,23 +77,35 @@ ServerRouter.prototype.getHandler = function(action, pattern, route) {
       }
     };
 
-    action.call(context, params, function(err, viewPath, locals) {
-      if (err) return next(err);
+    // load controller by name
+    router.getController(route.controller, function (error, controller) {
 
-      var defaults = router.defaultHandlerParams(viewPath, locals, route);
-      viewPath = defaults[0];
-      locals = defaults[1];
+      if (error)
+        throw error;
 
-      var viewData = {
-        locals: locals || {},
-        app: app,
-        req: req
-      };
+      var action = controller[route.action];
 
-      res.render(viewPath, viewData, function(err, html) {
+      if (typeof action != 'function')
+        throw new Error("Missing action \"" + route.action + "\" for controller \"" + route.controller + "\"");
+
+      action.call(context, params, function (err, viewPath, locals) {
         if (err) return next(err);
-        res.set(router.getHeadersForRoute(route));
-        res.type('html').end(html);
+
+        var defaults = router.defaultHandlerParams(viewPath, locals, route);
+        viewPath = defaults[0];
+        locals = defaults[1];
+
+        var viewData = {
+          locals: locals || {},
+          app: app,
+          req: req
+        };
+
+        res.render(viewPath, viewData, function (err, html) {
+          if (err) return next(err);
+          res.set(router.getHeadersForRoute(route));
+          res.type('html').end(html);
+        });
       });
     });
   };

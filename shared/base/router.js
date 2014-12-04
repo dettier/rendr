@@ -82,6 +82,13 @@ _.extend(BaseRouter.prototype, Backbone.Events, {
     return require(controllerPath);
   },
 
+  getController : function (controllerName, callback) {
+    var controllerDir = this.options.paths.controllerDir;
+    var modulePath = controllerDir + '/index';
+    var controllerIndex = require(modulePath);
+    return controllerIndex.getController(controllerName, callback);
+  },
+
   getAction: function(route) {
     var controller, action;
 
@@ -156,13 +163,12 @@ _.extend(BaseRouter.prototype, Backbone.Events, {
 
     definitions = _.toArray(arguments).slice(1);
     route = parseRouteDefinitions(definitions);
-    action = this.getAction(route);
 
     if (!(pattern instanceof RegExp) && pattern.slice(0, 1) !== '/') {
       pattern = "/" + pattern;
     }
 
-    handler = this.getHandler(action, pattern, route);
+    handler = this.getHandler(pattern, route);
     routeObj = [pattern, route, handler];
     this._routes.push(routeObj);
     this.trigger('route:add', routeObj);

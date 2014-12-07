@@ -88,12 +88,8 @@ ServerRouter.prototype.getHandler = function(pattern, route) {
       if (typeof action != 'function')
         throw new Error("Missing action \"" + route.action + "\" for controller \"" + route.controller + "\"");
 
-      action.call(context, params, function (err, viewPath, locals) {
+      action.call(context, params, function (err, View /* Class */, locals) {
         if (err) return next(err);
-
-        var defaults = router.defaultHandlerParams(viewPath, locals, route);
-        viewPath = defaults[0];
-        locals = defaults[1];
 
         var viewData = {
           locals: locals || {},
@@ -101,7 +97,7 @@ ServerRouter.prototype.getHandler = function(pattern, route) {
           req: req
         };
 
-        res.render(viewPath, viewData, function (err, html) {
+        res.render(View.id, viewData, function (err, html) {
           if (err) return next(err);
           res.set(router.getHeadersForRoute(route));
           res.type('html').end(html);

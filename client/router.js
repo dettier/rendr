@@ -235,10 +235,10 @@ ClientRouter.prototype.redirectTo = function(path, options) {
 
 ClientRouter.prototype.handleErr = function(err, route) {
   this.trigger('action:error', err, route);
-}
+};
 
 ClientRouter.prototype.getRenderCallback = function(route) {
-  return function(err, viewPath, locals) {
+  return function(err, View /* Class */, locals) {
     if (err) return this.handleErr(err, route);
 
     var View, _router = this;
@@ -247,20 +247,16 @@ ClientRouter.prototype.getRenderCallback = function(route) {
       this.currentView.remove();
     }
 
-    var defaults = this.defaultHandlerParams(viewPath, locals, route);
-    viewPath = defaults[0], locals = defaults[1];
-
     locals = locals || {};
     _.extend(locals, { fetch_summary: BaseView.extractFetchSummary(this.app.modelUtils, locals) });
 
     // Inject the app.
     locals.app = this.app;
-    this.getView(viewPath, this.options.entryPath, function(View) {
-      _router.currentView = new View(locals);
-      _router.renderView();
 
-      _router.trigger('action:end', route, firstRender);
-    });
+    _router.currentView = new View(locals);
+    _router.renderView();
+
+    _router.trigger('action:end', route, firstRender);
   }.bind(this);
 };
 

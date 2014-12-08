@@ -31,11 +31,15 @@ ViewEngine.prototype.render = function render(View /* Class */, data, callback) 
  * Render with a layout.
  */
 ViewEngine.prototype.renderWithLayout = function renderWithLayout(locals, app, callback) {
-  this.getLayoutTemplate(app, function(err, templateFn) {
-    if (err) return callback(err);
-    var html = templateFn(locals);
-    callback(null, html);
-  });
+  var LayoutView = app.loader.getAppViewClass();
+  var view = new LayoutView({}, { app : app });
+
+  var data = view.getTemplateData();
+  data = view.decorateTemplateData(data);
+
+  var template = view.getTemplate();
+  var html = template(_.extend(data, locals));
+  callback(null, html);
 };
 
 /**

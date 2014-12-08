@@ -99,7 +99,7 @@ ServerRouter.prototype.getHandler = function(pattern, route) {
           req: req
         };
 
-        var html = this.viewEngine.render(View, viewData);
+        var html = router.viewEngine.render(View, viewData);
         res.set(router.getHeadersForRoute(route));
         res.type('html').end(html);
       });

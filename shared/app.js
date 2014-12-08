@@ -26,7 +26,7 @@ module.exports = Backbone.Model.extend({
     this.options = options || {};
     this.loader  = this.options.loader;
 
-    if (!loader) {
+    if (!this.loader) {
       throw new Error("Loader is not defined");
     }
 

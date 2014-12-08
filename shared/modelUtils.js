@@ -6,6 +6,8 @@
 var BaseModel = require("./base/model"),
     BaseCollection = require("./base/collection");
 
+module.exports = ModelUtils;
+
 function ModelUtils(loader) {
   this.loader = loader;
   this._classMap = {};

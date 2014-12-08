@@ -22,8 +22,7 @@ var _ = require('underscore'),
 if (isServer) {
   // hide it from requirejs since it's server only
   var serverOnly_qs = 'qs';
-  var requireServerSide = global['require'];
-  var qs = requireServerSide(serverOnly_qs);
+  var qs = module['require'](serverOnly_qs);
 } else {
   Backbone.$ = window.$ || require('jquery');
 }

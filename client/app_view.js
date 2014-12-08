@@ -1,6 +1,7 @@
 var _ = require('underscore'),
     Backbone = require('backbone'),
     BaseView = require('../shared/base/view'),
+    isServer = (typeof window === 'undefined'),
     $ = (typeof window !== 'undefined' && window.$) || require('jquery');
 
 Backbone.$ = $;
@@ -18,8 +19,10 @@ module.exports = BaseView.extend({
     /**
      * Grab the element that contains the main view.
      */
-    this.$content = $(this.options.contentEl);
-    this._bindInterceptClick();
+    if (!isServer) {
+      this.$content = $(this.options.contentEl);
+      this._bindInterceptClick();
+    }
   },
 
   hasPushState: typeof window !== "undefined" && window.history.pushState != null,

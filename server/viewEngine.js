@@ -32,7 +32,7 @@ ViewEngine.prototype.render = function render(View /* Class */, data, callback) 
  */
 ViewEngine.prototype.renderWithLayout = function renderWithLayout(locals, app, callback) {
   var LayoutView = app.loader.getAppViewClass();
-  var view = new LayoutView({}, { app : app });
+  var view = new LayoutView({ app : app });
 
   var data = view.getTemplateData();
   data = view.decorateTemplateData(data);

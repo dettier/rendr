@@ -17,9 +17,6 @@ function defaultOptions() {
     mountPath: null,
     apiPath: '/api',
     appData: {},
-    paths: {},
-    viewsPath: null,
-    defaultEngine: 'js',
     apiProxy: null
   };
 }

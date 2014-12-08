@@ -1,6 +1,7 @@
 var _ = require('underscore'),
     BaseRouter = require('../shared/base/router'),
     ExpressRouter = require('express').Router,
+    ViewEngine = require('./viewEngine');
     sanitizer = require('sanitizer');
 
 module.exports = ServerRouter;
@@ -8,6 +9,7 @@ module.exports = ServerRouter;
 function ServerRouter() {
   this._expressRouter = new ExpressRouter();
   this.routesByPath = {};
+  this.viewEngine = new ViewEngine();
   this.on('route:add', this.addExpressRoute, this);
 
   BaseRouter.apply(this, arguments);
@@ -97,11 +99,9 @@ ServerRouter.prototype.getHandler = function(pattern, route) {
           req: req
         };
 
-        res.render(View.id, viewData, function (err, html) {
-          if (err) return next(err);
-          res.set(router.getHeadersForRoute(route));
-          res.type('html').end(html);
-        });
+        var html = this.viewEngine.render(View, viewData);
+        res.set(router.getHeadersForRoute(route));
+        res.type('html').end(html);
       });
     });
   };

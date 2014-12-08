@@ -6,15 +6,8 @@
 var BaseModel = require("./base/model"),
     BaseCollection = require("./base/collection");
 
-var typePath = {
-  model: "app/models/",
-  collection: "app/collections/"
-};
-
-module.exports = ModelUtils;
-
-function ModelUtils(entryPath) {
-  this.entryPath = entryPath;
+function ModelUtils(loader) {
+  this.loader = loader;
   this._classMap = {};
 }
 
@@ -47,40 +40,12 @@ ModelUtils.prototype.getCollection = function(path, models, options, callback) {
 };
 
 ModelUtils.prototype.getModelConstructor = function(path, callback) {
-  return this.fetchConstructor('model', path, callback);
+  return loader.getModelClass(path, callback);
 };
 
 ModelUtils.prototype.getCollectionConstructor = function(path, callback) {
-  return this.fetchConstructor('collection', path, callback);
+  return loader.getCollectionClass(path, callback);
 };
-
-ModelUtils.prototype.getFullPath = function(type, path) {
-  return this.entryPath + typePath[type] + path;
-};
-
-ModelUtils.prototype.fetchConstructor = function(type, path, callback) {
-  path = this.underscorize(path);
-
-  var fullPath = this.getFullPath(type, path);
-
-  if (this._classMap[path]) {
-    return (typeof callback == 'function') ? callback(this._classMap[path]) : this._classMap[path];
-  } else if (typeof callback == 'function') {
-    // Only used in AMD environment
-    if (typeof define != 'undefined') {
-      this._requireAMD([fullPath], callback);
-    } else {
-      callback(this._require(fullPath));
-    }
-    return;
-  } else {
-    return this._require(fullPath);
-  }
-};
-
-ModelUtils.prototype._require = require;
-
-ModelUtils.prototype._requireAMD = require;
 
 ModelUtils.prototype.isModel = function(obj) {
   return obj instanceof BaseModel;

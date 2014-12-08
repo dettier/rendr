@@ -40,10 +40,9 @@ _.extend(BaseRouter.prototype, Backbone.Events, {
   /**
    * Config
    *   - errorHandler: function to correctly handle error
-   *   - paths
-   *     - entryPath (required)
-   *     - routes (optional)
-   *     - controllerDir (optional)
+   *   - appConfig:
+   *     - getRoutes (required)
+   *     - getController(name, callback) (required)
    */
   options: null,
 
@@ -57,51 +56,14 @@ _.extend(BaseRouter.prototype, Backbone.Events, {
   initialize: noop,
 
   _initOptions: function(options) {
-    var entryPath;
-
     options = options || {};
-    options.paths = options.paths || {};
 
-    entryPath = options.paths.entryPath || options.entryPath;
-    options.paths = _.defaults(options.paths, {
-      entryPath: entryPath,
-      routes: entryPath + 'app/routes',
-      controllerDir: entryPath + 'app/controllers'
-    });
-
+    this.loader = options.loader;
     this.options = options;
   },
 
-  getControllerPath: function(controllerName) {
-    var controllerDir = this.options.paths.controllerDir;
-    return controllerDir + '/' + controllerName + '_controller';
-  },
-
-  loadController: function(controllerName) {
-    var controllerPath = this.getControllerPath(controllerName);
-    return require(controllerPath);
-  },
-
   getController : function (controllerName, callback) {
-    var controllerDir = this.options.paths.controllerDir;
-    var modulePath = controllerDir + '/index';
-    var controllerIndex = require(modulePath);
-    return controllerIndex.getController(controllerName, callback);
-  },
-
-  getAction: function(route) {
-    var controller, action;
-
-    if (route.controller) {
-      if (isAMDEnvironment) {
-        action = this.getControllerPath(route.controller);
-      } else {
-        controller = this.loadController(route.controller);
-        action = controller[route.action];
-      }
-    }
-
-    return action;
+    this.loader.getControllerClass(controllerName, callback);
   },
 
   getRedirect: function(route, params) {
@@ -115,7 +77,7 @@ _.extend(BaseRouter.prototype, Backbone.Events, {
   },
 
   getRouteBuilder: function() {
-    return require(this.options.paths.routes);
+    return this.loader.getRouteBuilder();
   },
 
   buildRoutes: function() {
@@ -173,17 +135,6 @@ _.extend(BaseRouter.prototype, Backbone.Events, {
     this._routes.push(routeObj);
     this.trigger('route:add', routeObj);
     return routeObj;
-  },
-
-  /**
-   * Support omitting view path; default it to ":controller/:action".
-   */
-  defaultHandlerParams: function(viewPath, locals, route) {
-    if (typeof viewPath !== 'string') {
-      locals = viewPath;
-      viewPath = route.controller + '/' + route.action;
-    }
-    return [viewPath, locals];
   },
 
   /**

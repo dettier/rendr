@@ -20,7 +20,6 @@ function defaultOptions() {
     paths: {},
     viewsPath: null,
     defaultEngine: 'js',
-    entryPath: process.cwd() + '/',
     apiProxy: null
   };
 }
@@ -29,9 +28,8 @@ function defaultOptions() {
 function Server(options) {
   this.options = options || {};
 
-  if (typeof rendr !== 'undefined' && rendr.entryPath) {
-    console.warn("Setting rendr.entryPath is now deprecated. Please pass in \nentryPath when initializing the rendr server.");
-    this.options.entryPath = rendr.entryPath;
+  if (!this.options.loader) {
+    throw new Error("Loader is not defined");
   }
 
   _.defaults(this.options, defaultOptions());
@@ -48,14 +46,6 @@ function Server(options) {
     this.options.errorHandler || express.errorHandler();
 
   this.router = new Router(this.options);
-
-  /**
-   * Tell Express to use our ViewEngine to handle .js, .coffee files.
-   * This can always be overridden in your app.
-   */
-  this.expressApp.set('views', this.options.viewsPath || (this.options.entryPath + 'app/views'));
-  this.expressApp.set('view engine', this.options.defaultEngine);
-  this.expressApp.engine(this.options.defaultEngine, this.viewEngine.render);
 
   this._configured = false;
 
@@ -109,7 +99,7 @@ Server.prototype.configure = function(fn) {
    */
   this.expressApp.use(this.initApp(this.options.appData, {
     apiPath: this.options.apiPath,
-    entryPath: this.options.entryPath,
+    loader: this.options.loader,
     modelUtils: this.options.modelUtils
   }));
 

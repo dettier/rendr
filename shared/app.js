@@ -6,19 +6,16 @@
 var Backbone = require('backbone'),
     Fetcher = require('./fetcher'),
     ModelUtils = require('./modelUtils'),
-    isServer = (typeof window === 'undefined'),
-    ClientRouter;
+    isServer = (typeof window === 'undefined');
 
 if (!isServer) {
-  ClientRouter = require('app/router');
   Backbone.$ = window.$ || require('jquery');
 }
 
 module.exports = Backbone.Model.extend({
 
   defaults: {
-    loading: false,
-    templateAdapter: 'rendr-handlebars'
+    loading: false
   },
 
   /**
@@ -27,14 +24,13 @@ module.exports = Backbone.Model.extend({
   constructor: function(attributes, options) {
     attributes = attributes || {};
     this.options = options || {};
+    this.loader  = this.options.loader;
 
-    var entryPath = this.options.entryPath || '';
-    if (!isServer) {
-      // the entry path must always be empty for the client
-      entryPath =  '';
+    if (!loader) {
+      throw new Error("Loader is not defined");
     }
 
-    this.modelUtils = this.options.modelUtils || new ModelUtils(entryPath);
+    this.modelUtils = this.options.modelUtils || new ModelUtils(this.loader);
 
     /**
      * On the server-side, you can access the Express request, `req`.
@@ -42,16 +38,6 @@ module.exports = Backbone.Model.extend({
     if (this.options.req) {
       this.req = this.options.req;
     }
-
-    /**
-     * Initialize the `templateAdapter`, allowing application developers to use whichever
-     * templating system they want.
-     *
-     * We can't use `this.get('templateAdapter')` here because `Backbone.Model`'s
-     * constructor has not yet been called.
-     */
-    var templateAdapterModule = attributes.templateAdapter || this.defaults.templateAdapter;
-    this.templateAdapter = require(templateAdapterModule)({entryPath: entryPath});
 
     /**
      * Instantiate the `Fetcher`, which is used on client and server.
@@ -64,10 +50,10 @@ module.exports = Backbone.Model.extend({
      * Initialize the `ClientRouter` on the client-side.
      */
     if (!isServer) {
+      var ClientRouter = this.loader.getClientLoaderClass();
       new ClientRouter({
         app: this,
-        entryPath: entryPath,
-        appViewClass: this.getAppViewClass(),
+        appViewClass: this.loader.getAppViewClass(),
         rootPath: attributes.rootPath
       });
     }
@@ -91,7 +77,7 @@ module.exports = Backbone.Model.extend({
    * @client
    */
   getAppViewClass: function () {
-    return require('../client/app_view');
+    return this.loader.getAppViewClass();
   },
 
   /**

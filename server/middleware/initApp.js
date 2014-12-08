@@ -10,8 +10,14 @@ var _ = require('underscore');
 
 module.exports = function(appAttributes, options) {
   options = options || {};
+  var loader = options.loader;
+
+  if (!loader) {
+    throw new Error("Loader is not defined");
+  }
+
   return function(req, res, next) {
-    var App = require(options.entryPath + 'app/app');
+    var App = loader.getAppClass();
 
     /**
      * Pass any data that needs to be accessible by the client
@@ -24,7 +30,7 @@ module.exports = function(appAttributes, options) {
        * This will only be accessible on the server.
        */
       req: req,
-      entryPath: options.entryPath,
+      loader: loader,
       modelUtils: options.modelUtils
     };
 

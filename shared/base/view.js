@@ -156,7 +156,7 @@ module.exports = BaseView = Backbone.View.extend({
    * Get template function
    */
   getTemplate: function() {
-    return this.app.templateAdapter.getTemplate(this.getTemplateName());
+    throw new Error("Not implemented. Must be implemented in a subclass.");
   },
 
   /**
@@ -437,23 +437,8 @@ module.exports = BaseView = Backbone.View.extend({
  * -------------
  */
 
-BaseView.getView = function(viewName, entryPath, callback) {
-  var viewPath;
-
-  if (!entryPath) entryPath = '';
-
-  viewPath = entryPath + "app/views/" + viewName;
-  // check for AMD environment
-  if (typeof callback == 'function') {
-    // Only used in AMD environment
-    if (typeof define != 'undefined') {
-      requireAMD([viewPath], callback);
-    } else {
-      callback(require(viewPath));
-    }
-  } else {
-    return require(viewPath);
-  }
+BaseView.getView = function(viewName, loader, callback) {
+  loader.getViewClass(viewName, callback);
 };
 
 BaseView.attach = function(app, parentView, callback) {
@@ -476,7 +461,7 @@ BaseView.attach = function(app, parentView, callback) {
         }
       });
       options.app = app;
-      BaseView.getView(viewName, app.options.entryPath, function(ViewClass) {
+      BaseView.getView(viewName, app.loader, function(ViewClass) {
         var view = new ViewClass(options);
         view.attach($el, parentView);
         cb(null, view);

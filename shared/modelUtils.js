@@ -17,36 +17,26 @@ ModelUtils.prototype.getModel = function(path, attrs, options, callback) {
   var Model;
   attrs = attrs || {};
   options = options || {};
-  if (typeof callback == 'function') {
-    this.getModelConstructor(path, function(Model) {
-      callback(new Model(attrs, options));
-    });
-  } else {
-    Model = this.getModelConstructor(path);
-    return new Model(attrs, options);
-  }
+  this.getModelConstructor(path, function(Model) {
+    callback(new Model(attrs, options));
+  });
 };
 
 ModelUtils.prototype.getCollection = function(path, models, options, callback) {
   var Collection;
   models = models || [];
   options = options || {};
-  if (typeof callback == 'function') {
-    this.getCollectionConstructor(path, function(Collection) {
-      callback(new Collection(models, options));
-    });
-  } else {
-    Collection = this.getCollectionConstructor(path);
-    return new Collection(models, options);
-  }
+  this.getCollectionConstructor(path, function(Collection) {
+    callback(new Collection(models, options));
+  });
 };
 
 ModelUtils.prototype.getModelConstructor = function(path, callback) {
-  return this.loader.getModelClass(path, callback);
+  this.loader.getModelClass(path, callback);
 };
 
 ModelUtils.prototype.getCollectionConstructor = function(path, callback) {
-  return this.loader.getCollectionClass(path, callback);
+  this.loader.getCollectionClass(path, callback);
 };
 
 ModelUtils.prototype.isModel = function(obj) {

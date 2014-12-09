@@ -37,9 +37,9 @@ Fetcher.prototype.buildOptions = function(additionalOptions, params) {
  */
 Fetcher.prototype.getModelOrCollectionForSpec = function(spec, attrsOrModels, options, callback) {
   if (spec.model) {
-    return this.getModelForSpec(spec, attrsOrModels, options, callback);
+    this.getModelForSpec(spec, attrsOrModels, options, callback);
   } else {
-    return this.getCollectionForSpec(spec, attrsOrModels, options, callback);
+    this.getCollectionForSpec(spec, attrsOrModels, options, callback);
   }
 };
 
@@ -49,7 +49,7 @@ Fetcher.prototype.getModelOrCollectionForSpec = function(spec, attrsOrModels, op
 Fetcher.prototype.getCollectionForSpec = function(spec, models, options, callback) {
   var collectionOptions = this.buildOptions(options, spec.params);
   models = models || [];
-  return this.modelUtils.getCollection(spec.collection, models, collectionOptions, callback);
+  this.modelUtils.getCollection(spec.collection, models, collectionOptions, callback);
 };
 
 /**
@@ -61,7 +61,7 @@ Fetcher.prototype.getModelForSpec = function(spec, attributes, options, callback
   attributes = attributes || {};
   _.defaults(attributes, spec.params);
 
-  return this.modelUtils.getModel(spec.model, attributes, modelOptions, callback);
+  this.modelUtils.getModel(spec.model, attributes, modelOptions, callback);
 };
 
 /**
@@ -214,24 +214,26 @@ Fetcher.prototype.isMissingKeys = function(modelData, keys) {
 };
 
 Fetcher.prototype.fetchFromApi = function(spec, callback) {
-  var model = this.getModelOrCollectionForSpec(spec),
-      fetcher = this;
-  model.fetch({
-    data: spec.params,
-    success: function(model, body) {
-      callback(null, model);
-    },
-    error: function(model, resp, options) {
-      var body, respOutput, err;
+  var fetcher = this;
 
-      body = resp.body;
-      resp.body = typeof body === 'string' ? body.slice(0, 150) : body;
-      respOutput = JSON.stringify(resp);
-      err = new Error("ERROR fetching model '" + fetcher.modelUtils.modelName(model.constructor) + "' with options '" + JSON.stringify(options) + "'. Response: " + respOutput);
-      err.status = resp.status;
-      err.body = body;
-      callback(err);
-    }
+  this.getModelOrCollectionForSpec(spec, function (model) {
+    model.fetch({
+      data: spec.params,
+      success: function(model, body) {
+        callback(null, model);
+      },
+      error: function(model, resp, options) {
+        var body, respOutput, err;
+
+        body = resp.body;
+        resp.body = typeof body === 'string' ? body.slice(0, 150) : body;
+        respOutput = JSON.stringify(resp);
+        err = new Error("ERROR fetching model '" + fetcher.modelUtils.modelName(model.constructor) + "' with options '" + JSON.stringify(options) + "'. Response: " + respOutput);
+        err.status = resp.status;
+        err.body = body;
+        callback(err);
+      }
+    });
   });
 };
 

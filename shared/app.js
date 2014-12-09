@@ -54,6 +54,7 @@ module.exports = Backbone.Model.extend({
       new ClientRouter({
         app: this,
         appViewClass: this.loader.getAppViewClass(),
+        loader : this.loader,
         rootPath: attributes.rootPath
       });
     }

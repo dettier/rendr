@@ -50,7 +50,7 @@ module.exports = Backbone.Model.extend({
      * Initialize the `ClientRouter` on the client-side.
      */
     if (!isServer) {
-      var ClientRouter = this.loader.getClientLoaderClass();
+      var ClientRouter = this.loader.getClientRouterClass();
       new ClientRouter({
         app: this,
         appViewClass: this.loader.getAppViewClass(),

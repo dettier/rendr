@@ -461,7 +461,9 @@ BaseView.attach = function(app, parentView, callback) {
         }
       });
       options.app = app;
-      BaseView.getView(viewName, app.loader, function(ViewClass) {
+      BaseView.getView(viewName, app.loader, function(err, ViewClass) {
+        if (err)
+          throw err;
         var view = new ViewClass(options);
         view.attach($el, parentView);
         cb(null, view);

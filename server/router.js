@@ -99,9 +99,12 @@ ServerRouter.prototype.getHandler = function(pattern, route) {
           req: req
         };
 
-        var html = router.viewEngine.render(View, viewData);
-        res.set(router.getHeadersForRoute(route));
-        res.type('html').end(html);
+        router.viewEngine.render(View, viewData, function (err, html) {
+          if (err)
+            return next(err);
+          res.set(router.getHeadersForRoute(route));
+          res.type('html').end(html);
+        });
       });
     });
   };

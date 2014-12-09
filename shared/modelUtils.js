@@ -17,7 +17,7 @@ ModelUtils.prototype.getModel = function(path, attrs, options, callback) {
   var Model;
   attrs = attrs || {};
   options = options || {};
-  this.getModelConstructor(path, function(Model) {
+  this.getModelConstructor(path, function(err, Model) {
     callback(new Model(attrs, options));
   });
 };
@@ -26,7 +26,7 @@ ModelUtils.prototype.getCollection = function(path, models, options, callback) {
   var Collection;
   models = models || [];
   options = options || {};
-  this.getCollectionConstructor(path, function(Collection) {
+  this.getCollectionConstructor(path, function(err, Collection) {
     callback(new Collection(models, options));
   });
 };

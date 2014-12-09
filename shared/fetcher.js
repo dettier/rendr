@@ -216,7 +216,7 @@ Fetcher.prototype.isMissingKeys = function(modelData, keys) {
 Fetcher.prototype.fetchFromApi = function(spec, callback) {
   var fetcher = this;
 
-  this.getModelOrCollectionForSpec(spec, function (model) {
+  this.getModelOrCollectionForSpec(spec, undefined, undefined, function (model) {
     model.fetch({
       data: spec.params,
       success: function(model, body) {

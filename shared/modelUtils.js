@@ -42,11 +42,11 @@ ModelUtils.prototype.getCollection = function(path, models, options, callback) {
 };
 
 ModelUtils.prototype.getModelConstructor = function(path, callback) {
-  return loader.getModelClass(path, callback);
+  return this.loader.getModelClass(path, callback);
 };
 
 ModelUtils.prototype.getCollectionConstructor = function(path, callback) {
-  return loader.getCollectionClass(path, callback);
+  return this.loader.getCollectionClass(path, callback);
 };
 
 ModelUtils.prototype.isModel = function(obj) {

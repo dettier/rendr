@@ -30,10 +30,12 @@ ModelUtils.prototype.getCollection = function(path, models, options, callback) {
 };
 
 ModelUtils.prototype.getModelConstructor = function(path, callback) {
+  path = this.underscorize(path);
   this.loader.getModelClass(path, callback);
 };
 
 ModelUtils.prototype.getCollectionConstructor = function(path, callback) {
+  path = this.underscorize(path);
   this.loader.getCollectionClass(path, callback);
 };
 

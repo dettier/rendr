@@ -243,7 +243,7 @@ Fetcher.prototype.fetchFromApi = function(spec, callback) {
 Fetcher.prototype.retrieveModelsForCollectionName = function(collectionName, modelIds, callback) {
   this.modelUtils.getModelNameForCollectionName(collectionName, function (err, modelName) {
     callback(null, this.retrieveModels(modelName, modelIds));
-  });
+  }.bind(this));
 };
 
 Fetcher.prototype.retrieveModels = function(modelName, modelIds) {

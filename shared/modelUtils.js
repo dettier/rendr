@@ -52,7 +52,7 @@ ModelUtils.prototype.isCollection = function(obj) {
 ModelUtils.prototype.getModelNameForCollectionName = function(collectionName, callback) {
   this.getCollectionConstructor(collectionName, function (err, Collection) {
     callback(null, this.modelName(Collection.prototype.model));
-  });
+  }.bind(this));
 };
 
 ModelUtils.uppercaseRe = /([A-Z])/g;

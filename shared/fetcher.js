@@ -152,18 +152,18 @@ Fetcher.prototype._retrieveModelData = function(spec, modelData, modelOptions, c
 
   // If we found the model/collection in the store, then return that.
   if (!this.needsFetch(modelData, spec)) {
-    model = this.getModelOrCollectionForSpec(spec, modelData, modelOptions);
-
-    /**
-     * If 'checkFresh' is set (and we're in the client), then before we
-     * return the cached object we fire off a fetch, compare the results,
-     * and if the data is different, we trigger a 'refresh' event.
-     */
-    if (spec.checkFresh && !isServer && this.shouldCheckFresh(spec)) {
-      model.checkFresh();
-      this.didCheckFresh(spec);
-    }
-    cb(null, model);
+    this.getModelOrCollectionForSpec(spec, modelData, modelOptions, function (model) {
+      /**
+       * If 'checkFresh' is set (and we're in the client), then before we
+       * return the cached object we fire off a fetch, compare the results,
+       * and if the data is different, we trigger a 'refresh' event.
+       */
+      if (spec.checkFresh && !isServer && this.shouldCheckFresh(spec)) {
+        model.checkFresh();
+        this.didCheckFresh(spec);
+      }
+      cb(null, model);
+    });
   } else {
     /**
      * Else, fetch anew.

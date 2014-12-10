@@ -47,11 +47,10 @@ ModelUtils.prototype.isCollection = function(obj) {
   return obj instanceof BaseCollection;
 };
 
-ModelUtils.prototype.getModelNameForCollectionName = function(collectionName) {
-  var Collection;
-  throw new Error("getModelNameForCollectionName function should be async");
-  Collection = this.getCollectionConstructor(collectionName);
-  return this.modelName(Collection.prototype.model);
+ModelUtils.prototype.getModelNameForCollectionName = function(collectionName, callback) {
+  this.getCollectionConstructor(collectionName, function (err, Collection) {
+    callback(null, this.modelName(Collection.prototype.model));
+  });
 };
 
 ModelUtils.uppercaseRe = /([A-Z])/g;

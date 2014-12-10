@@ -41,8 +41,7 @@ CollectionStore.prototype.get = function(collectionName, params, callback) {
     });
     return;
   } else {
-    var Collection = this.modelUtils.getCollectionConstructor(collectionName);
-    return get.call(this, collectionName, params, Collection);
+    throw new Error("CollectionStore.get: only async call is allowed.")
   }
 
   function get(collectionName, params, Collection) {

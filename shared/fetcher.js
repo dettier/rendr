@@ -128,13 +128,16 @@ Fetcher.prototype._retrieve = function(fetchSpecs, options, callback) {
 
           this.collectionStore.get(spec.collection, spec.params, function(collectionData) {
             if (collectionData) {
-              modelData = this.retrieveModelsForCollectionName(spec.collection, collectionData.ids);
-              modelOptions = {
-                meta: collectionData.meta,
-                params: collectionData.params
-              };
+              this.retrieveModelsForCollectionName(spec.collection, collectionData.ids, function (err, modelData) {
+                modelOptions = {
+                  meta: collectionData.meta,
+                  params: collectionData.params
+                };
+                this._retrieveModelData(spec, modelData, modelOptions, cb);
+              }.bind(this));
+            } else {
+              this._retrieveModelData(spec, modelData, modelOptions, cb);
             }
-            this._retrieveModelData(spec, modelData, modelOptions, cb);
           }.bind(this));
 
         }
@@ -237,9 +240,10 @@ Fetcher.prototype.fetchFromApi = function(spec, callback) {
   });
 };
 
-Fetcher.prototype.retrieveModelsForCollectionName = function(collectionName, modelIds) {
-  var modelName = this.modelUtils.getModelNameForCollectionName(collectionName);
-  return this.retrieveModels(modelName, modelIds);
+Fetcher.prototype.retrieveModelsForCollectionName = function(collectionName, modelIds, callback) {
+  this.modelUtils.getModelNameForCollectionName(collectionName, function (err, modelName) {
+    callback(null, this.retrieveModels(modelName, modelIds));
+  });
 };
 
 Fetcher.prototype.retrieveModels = function(modelName, modelIds) {
@@ -327,20 +331,21 @@ Fetcher.prototype.hydrate = function(summaries, options, callback) {
           throw new Error("Collection of type \"" + summary.collection + "\" not found for params: " + JSON.stringify(summary.params));
         }
 
-        models = fetcher.retrieveModelsForCollectionName(summary.collection, collectionData.ids);
-        collectionOptions = {
-          params: summary.params,
-          meta: collectionData.meta,
-          app: options.app
-        };
-        fetcher.modelUtils.getCollection(summary.collection, models, collectionOptions, function(collection) {
-          results[name] = collection;
+        fetcher.retrieveModelsForCollectionName(summary.collection, collectionData.ids, function (err, models) {
+          collectionOptions = {
+            params: summary.params,
+            meta: collectionData.meta,
+            app: options.app
+          };
+          fetcher.modelUtils.getCollection(summary.collection, models, collectionOptions, function(collection) {
+            results[name] = collection;
 
-          if ((results[name] != null) && (options.app != null)) {
-            results[name].app = options.app;
-          }
+            if ((results[name] != null) && (options.app != null)) {
+              results[name].app = options.app;
+            }
 
-          cb(null);
+            cb(null);
+          });
         });
       });
     }

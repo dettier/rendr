@@ -64,10 +64,8 @@ module.exports = BaseView = Backbone.View.extend({
     }
 
     if (options.model != null) {
-      if (!(options.model instanceof Backbone.Model) && options.model_name) {
-        options.model = this.app.modelUtils.getModel(options.model_name, options.model, {
-          parse: true
-        });
+      if (!(options.model instanceof Backbone.Model)) {
+        throw new Error("model option is not instance of Backbone Model");
       }
       options.model_name = options.model_name || this.app.modelUtils.modelName(options.model.constructor);
       options.model_id = options.model.id;

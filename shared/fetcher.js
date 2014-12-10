@@ -248,9 +248,9 @@ Fetcher.prototype.retrieveModelsForCollectionName = function(collectionName, mod
 };
 
 Fetcher.prototype.retrieveModels = function(modelName, modelIds, callback) {
-  async.map(modelIds, function(id) {
+  async.map(modelIds, function(idx, cb) {
     return this.modelStore.get(modelName, id, null, function (err, model) {
-      cb(null, model)
+      cb(null, model);
     });
   }.bind(this), callback);
 };

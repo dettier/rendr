@@ -27,7 +27,7 @@ ModelStore.prototype.set = function(model) {
   return Super.prototype.set.call(this, key, newAttrs, null);
 };
 
-ModelStore.prototype.get = function(modelName, id, returnModelInstance) {
+ModelStore.prototype.get = function(modelName, id, returnModelInstance, callback) {
   var key, modelData;
 
   if (returnModelInstance == null) {
@@ -37,11 +37,11 @@ ModelStore.prototype.get = function(modelName, id, returnModelInstance) {
   modelData = Super.prototype.get.call(this, key);
   if (modelData) {
     if (returnModelInstance) {
-      return this.modelUtils.getModel(modelName, modelData, {
+      this.modelUtils.getModel(modelName, modelData, {
         app: this.app
-      });
+      }, function (result) { callback(null, result); });
     } else {
-      return modelData;
+      callback(null, modelData);
     }
   }
 };

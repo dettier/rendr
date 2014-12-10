@@ -443,14 +443,16 @@ BaseView.attach = function(app, parentView, callback) {
   var scope = parentView ? parentView.$el : null,
       list;
 
-  // only views with no parent view or parent view attached
+  // only direct subviews of parentView
   list = $('[data-view]', scope).filter(function () {
-    if (!parentView)
-      return true;
-
     var $parent = $(this.parentNode);
-    var parentViewNode = $parent.closest('[data-view]')[0];
-    return parentViewNode === parentView.el;
+    var closestParentViewNode = $parent.closest('[data-view]')[0];
+
+    if (parentView) {
+      return closestParentViewNode === parentView.el;
+    } else {
+      return !closestParentViewNode;
+    }
   }).toArray();
 
   async.map(list, function(el, cb) {

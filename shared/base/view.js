@@ -443,7 +443,14 @@ BaseView.getView = function(viewName, loader, callback) {
 
 BaseView.attach = function(app, parentView, callback) {
   var scope = parentView ? parentView.$el : null,
-      list = $('[data-view]', scope).toArray();
+      list;
+
+  // only views with no parent view or parent view attached
+  list = $('[data-view]', scope).filter(function (idx) {
+    var $parent = $(this.parentNode);
+    var parentViewNode = $parent.closest('[data-view]');
+    return parentViewNode.size() == 0 || parentViewNode.data('view-attached');
+  }).toArray();
 
   async.map(list, function(el, cb) {
     var $el, options, parsed, viewName;

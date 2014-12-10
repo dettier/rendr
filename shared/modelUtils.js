@@ -13,6 +13,7 @@ function ModelUtils(loader) {
   this._classMap = {};
 }
 
+// TODO : привести callback к стандарту
 ModelUtils.prototype.getModel = function(path, attrs, options, callback) {
   attrs = attrs || {};
   options = options || {};
@@ -21,6 +22,7 @@ ModelUtils.prototype.getModel = function(path, attrs, options, callback) {
   });
 };
 
+// TODO : привести callback к стандарту
 ModelUtils.prototype.getCollection = function(path, models, options, callback) {
   models = models || [];
   options = options || {};

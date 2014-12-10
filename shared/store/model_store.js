@@ -14,7 +14,7 @@ ModelStore.prototype = Object.create(Super.prototype);
 ModelStore.prototype.constructor = ModelStore;
 
 ModelStore.prototype.set = function(model) {
-  var existingAttrs, id, key, modelName, newAttrs;
+  var id, key, modelName, newAttrs;
 
   id = model.get(model.idAttribute);
   modelName = this.modelUtils.modelName(model.constructor);
@@ -23,12 +23,7 @@ ModelStore.prototype.set = function(model) {
   }
   key = this._getModelStoreKey(modelName, id);
 
-  /**
-   * We want to merge the model attrs with whatever is already
-   * present in the store.
-   */
-  existingAttrs = this.get(modelName, id) || {};
-  newAttrs = _.extend({}, existingAttrs, model.toJSON());
+  newAttrs = model.toJSON();
   return Super.prototype.set.call(this, key, newAttrs, null);
 };
 

@@ -49,6 +49,7 @@ ModelUtils.prototype.isCollection = function(obj) {
 
 ModelUtils.prototype.getModelNameForCollectionName = function(collectionName) {
   var Collection;
+  throw new Error("getModelNameForCollectionName function should be async");
   Collection = this.getCollectionConstructor(collectionName);
   return this.modelName(Collection.prototype.model);
 };
@@ -89,7 +90,7 @@ ModelUtils.prototype.modelName = function(modelOrCollectionClass) {
 };
 
 ModelUtils.prototype.modelIdAttribute = function(modelName, callback) {
-  this.getModelConstructor(modelName, function(constructor) {
+  this.getModelConstructor(modelName, function(err, constructor) {
     callback(constructor.prototype.idAttribute);
   });
 };

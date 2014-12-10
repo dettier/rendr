@@ -36,7 +36,7 @@ CollectionStore.prototype.get = function(collectionName, params, callback) {
    * params for the given collection.
    */
   if (typeof callback == 'function') {
-    this.modelUtils.getCollectionConstructor(collectionName, function(Collection) {
+    this.modelUtils.getCollectionConstructor(collectionName, function(err, Collection) {
       callback(get.call(_collectionStore, collectionName, params, Collection));
     });
     return;

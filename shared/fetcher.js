@@ -170,7 +170,7 @@ Fetcher.prototype._retrieveModelData = function(spec, modelData, modelOptions, c
      */
     this.fetchFromApi(spec, cb);
   }
-}
+};
 
 Fetcher.prototype._retrieveModel = function(spec, callback) {
   var fetcher = this;
@@ -186,7 +186,9 @@ Fetcher.prototype._retrieveModel = function(spec, callback) {
         return callback(null, null);
 
       // Attempt to fetch the model in the modelStore based on the other params
-      return callback(null, fetcher.modelStore.find(spec.model, spec.params));
+      fetcher.modelStore.find(spec.model, spec.params, null, function (err, modelData) {
+        callback(null, modelData);
+      });
     });
   });
 };

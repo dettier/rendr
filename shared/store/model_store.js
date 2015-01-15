@@ -43,6 +43,8 @@ ModelStore.prototype.get = function(modelName, id, returnModelInstance, callback
     } else {
       callback(null, modelData);
     }
+  } else {
+    callback(null, undefined);
   }
 };
 

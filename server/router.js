@@ -22,7 +22,12 @@ ServerRouter.prototype = Object.create(BaseRouter.prototype);
 ServerRouter.prototype.constructor = ServerRouter;
 
 ServerRouter.prototype.escapeParams = function(params) {
-  var escaped = {};
+  var escaped;
+  if (_.isArray(params)) {
+    escaped = [];
+  } else {
+    escaped = {};
+  }
   _.each(params, function(value, key) {
     if (_.isObject(value)) {
       escaped[sanitizer.sanitize(key)] = this.escapeParams(value);

@@ -9,6 +9,7 @@ var _ = require('underscore'),
     Backbone = require('backbone'),
     BaseRouter = require('../shared/base/router'),
     BaseView = require('../shared/base/view'),
+    qs = require(qs),
     $ = (typeof window !== 'undefined' && window.$) || require('jquery'),
     extractParamNamesRe = /:(\w+)/g,
     plusRe = /\+/g,
@@ -180,15 +181,7 @@ ClientRouter.prototype.getParamsHash = function(pattern, paramsArray, search) {
     return memo;
   }, {});
 
-  query = search.slice(1).split('&').reduce(function(memo, queryPart) {
-    var parts = queryPart.split('=');
-    if (parts.length > 1) {
-      parts[0] = decodeURIComponent(parts[0].replace(plusRe, ' '));
-      parts[1] = decodeURIComponent(parts[1].replace(plusRe, ' '));
-      memo[parts[0]] = parts[1];
-    }
-    return memo;
-  }, {});
+  query = qs.parse(decodeURIComponent(search.replace(plusRe, ' ')));
 
   return _.extend(query, params);
 };

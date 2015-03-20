@@ -181,6 +181,9 @@ ClientRouter.prototype.getParamsHash = function(pattern, paramsArray, search) {
     return memo;
   }, {});
 
+  if (search[0] == '?') {
+    search = search.slice(1);
+  }
   query = qs.parse(decodeURIComponent(search.replace(plusRe, ' ')));
 
   return _.extend(query, params);

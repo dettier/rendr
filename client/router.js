@@ -183,7 +183,9 @@ ClientRouter.prototype.getParamsHash = function(pattern, paramsArray, search) {
   query = search.slice(1).split('&').reduce(function(memo, queryPart) {
     var parts = queryPart.split('=');
     if (parts.length > 1) {
-      memo[parts[0]] = decodeURIComponent(parts[1].replace(plusRe, ' '));
+      parts[0] = decodeURIComponent(parts[0].replace(plusRe, ' '));
+      parts[1] = decodeURIComponent(parts[1].replace(plusRe, ' '));
+      memo[parts[0]] = parts[1];
     }
     return memo;
   }, {});

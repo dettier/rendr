@@ -93,6 +93,25 @@ ClientRouter.prototype.addBackboneRoute = function(routeObj) {
   this._router.route(pattern, name, handler);
 };
 
+getFragment = function (href) {
+  var hashIdx = href.indexOf('#');
+  if (hashIdx >= 0) {
+    return href.slice(hashIdx+1);
+  } else {
+    return href;
+  }
+};
+
+getSearchParams = function(href) {
+  var fragment = getFragment(href);
+  var hashIdx = fragment.indexOf('?');
+  if (hashIdx >= 0) {
+    return fragment.slice(hashIdx+1);
+  } else {
+    return '';
+  }
+};
+
 ClientRouter.prototype.getHandler = function(pattern, route) {
   var router = this;
 
@@ -116,7 +135,7 @@ ClientRouter.prototype.getHandler = function(pattern, route) {
       });
     } else {
       paramsArray = _.toArray(arguments);
-      params = router.getParamsHash(pattern, paramsArray, window.location.search);
+      params = router.getParamsHash(pattern, paramsArray, getSearchParams(window.location.href));
 
       redirect = router.getRedirect(route, params);
       /**

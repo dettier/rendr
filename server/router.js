@@ -105,7 +105,7 @@ ServerRouter.prototype.getHandler = function(pattern, route) {
       if (typeof action != 'function')
         throw new Error("Missing action \"" + route.action + "\" for controller \"" + route.controller + "\"");
 
-      action.call(context, params, function (err, View /* Class */, locals) {
+      action.call(context, params, function (err, View /* Class */, locals, options) {
         if (err) return next(err);
 
         var viewData = {
@@ -114,10 +114,13 @@ ServerRouter.prototype.getHandler = function(pattern, route) {
           req: req
         };
 
+        var status = (options && options.status) || 200;
+
         router.viewEngine.render(View, viewData, function (err, html) {
           if (err)
             return next(err);
           res.set(router.getHeadersForRoute(route));
+          res.status(status);
           res.type('html').end(html);
         });
       });
